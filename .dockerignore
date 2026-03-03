@@ -1,0 +1,26 @@
+# Version control
+.git
+.gitignore
+
+# CI configs (not needed in image build context)
+.github
+.gitlab-ci.yml
+
+# Build outputs
+build/
+app/build/
+.gradle/
+
+# IDE files
+.idea/
+*.iml
+
+# Local secrets — never copy into image
+local.properties
+keystore.jks
+*.jks
+*.keystore
+
+# Docker files themselves
+docker-compose.yml
+docker/

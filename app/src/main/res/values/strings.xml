@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WiFi On</string>
+
+    <!-- Status -->
+    <string name="status_wifi_on">Wi-Fi is ON</string>
+    <string name="status_wifi_off">Wi-Fi is OFF</string>
+
+    <!-- Button -->
+    <string name="btn_enable_wifi">Enable Wi-Fi</string>
+
+    <!-- Info text -->
+    <string name="info_wifi_on">Wi-Fi will be re-enabled automatically after reboot.</string>
+    <string name="info_wifi_off">Wi-Fi will be enabled automatically after reboot (Android 8–9) or a notification will prompt you (Android 10+).</string>
+    <string name="info_wifi_off_android10">On Android 10+, tap the notification after reboot to open Wi-Fi settings and enable it manually.</string>
+
+    <!-- Accessibility -->
+    <string name="wifi_icon_description">Wi-Fi status icon</string>
+
+    <!-- Toast -->
+    <string name="toast_open_settings">Tap the notification to open Wi-Fi settings.</string>
+
+    <!-- Notification -->
+    <string name="notification_channel_name">Wi-Fi Enable Reminder</string>
+    <string name="notification_channel_description">Notifies you to enable Wi-Fi after boot on Android 10+</string>
+    <string name="notification_title">Enable Wi-Fi</string>
+    <string name="notification_text">Tap to open Wi-Fi settings and turn on Wi-Fi.</string>
+</resources>

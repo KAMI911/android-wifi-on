@@ -1,0 +1,45 @@
+services:
+
+  # ── Debug build ──────────────────────────────────────────────────────────────
+  # Usage: docker-compose run --rm build-debug
+  # Output: app/build/outputs/apk/debug/app-debug.apk
+  build-debug:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - .:/app
+      - gradle-cache:/gradle-cache
+    command: assembleDebug
+
+  # ── Release build ────────────────────────────────────────────────────────────
+  # Usage:
+  #   export KEYSTORE_BASE64=$(base64 -w0 your-keystore.jks)
+  #   export KEYSTORE_PASSWORD=<store-password>
+  #   export KEY_ALIAS=<key-alias>
+  #   export KEY_PASSWORD=<key-password>
+  #   export VERSION_NAME=1.0.0
+  #   export VERSION_CODE=10000
+  #   docker-compose run --rm build-release
+  # Output: app/build/outputs/apk/release/app-release.apk
+  build-release:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - .:/app
+      - gradle-cache:/gradle-cache
+    environment:
+      - KEYSTORE_BASE64
+      - KEYSTORE_FILE
+      - KEYSTORE_PASSWORD
+      - KEY_ALIAS
+      - KEY_PASSWORD
+      - VERSION_NAME
+      - VERSION_CODE
+    command: assembleRelease
+
+volumes:
+  gradle-cache:
+    # Named volume keeps the Gradle dependency cache across builds.
+    # Remove with: docker volume rm android-wifi-on_gradle-cache

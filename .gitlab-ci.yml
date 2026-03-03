@@ -1,0 +1,129 @@
+stages:
+  - build
+  - release
+
+variables:
+  ANDROID_SDK_ROOT:     "/opt/android-sdk"
+  ANDROID_COMPILE_SDK:  "35"
+  ANDROID_BUILD_TOOLS:  "35.0.0"
+  GRADLE_USER_HOME:     "$CI_PROJECT_DIR/.gradle"
+  # Disable Gradle daemon inside CI containers
+  GRADLE_OPTS:          "-Dorg.gradle.daemon=false"
+
+# ── Shared template ────────────────────────────────────────────────────────────
+.android-build:
+  image: eclipse-temurin:17-jdk-jammy
+  cache:
+    key: "gradle-${CI_COMMIT_REF_SLUG}"
+    paths:
+      - .gradle/
+  before_script:
+    # System packages
+    - apt-get update -qq && apt-get install -y -qq curl unzip wget
+
+    # Android command-line tools
+    - mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
+    - |
+      curl -fsSL \
+        "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip" \
+        -o /tmp/cmdline-tools.zip
+      unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-extract
+      mv /tmp/cmdline-extract/cmdline-tools "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+      rm /tmp/cmdline-tools.zip
+    - export PATH="$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools"
+
+    # Accept licenses & install SDK components
+    - yes | sdkmanager --licenses > /dev/null 2>&1
+    - sdkmanager
+        "platform-tools"
+        "platforms;android-${ANDROID_COMPILE_SDK}"
+        "build-tools;${ANDROID_BUILD_TOOLS}"
+
+    # Gradle wrapper jar (not committed as a binary)
+    - |
+      GRADLE_VER=$(grep distributionUrl gradle/wrapper/gradle-wrapper.properties \
+        | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')
+      curl -fsSL \
+        "https://raw.githubusercontent.com/gradle/gradle/v${GRADLE_VER}/gradle/wrapper/gradle-wrapper.jar" \
+        -o gradle/wrapper/gradle-wrapper.jar
+    - chmod +x gradlew
+
+# ── Build debug (every branch, not tags) ───────────────────────────────────────
+build-debug:
+  extends: .android-build
+  stage: build
+  script:
+    - ./gradlew assembleDebug --stacktrace
+  artifacts:
+    name: "debug-${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - app/build/outputs/apk/debug/*.apk
+    expire_in: 7 days
+  rules:
+    - if: '$CI_COMMIT_TAG == null'
+
+# ── Build release (tags only) ──────────────────────────────────────────────────
+build-release:
+  extends: .android-build
+  stage: build
+  script:
+    # Derive semantic version from tag (v1.2.3 → name=1.2.3, code=10203)
+    - |
+      TAG="${CI_COMMIT_TAG}"
+      VERSION_NAME="${TAG#v}"
+      IFS='.' read -r major minor patch <<< "$VERSION_NAME"
+      VERSION_CODE=$(( ${major:-0} * 10000 + ${minor:-0} * 100 + ${patch:-0} ))
+      echo "VERSION_NAME=$VERSION_NAME" >> build.env
+      echo "VERSION_CODE=$VERSION_CODE" >> build.env
+      export VERSION_NAME VERSION_CODE
+
+    # Decode keystore from CI/CD variable
+    - echo "$KEYSTORE_BASE64" | base64 --decode > keystore.jks
+    - export KEYSTORE_FILE="$CI_PROJECT_DIR/keystore.jks"
+
+    - ./gradlew assembleRelease --stacktrace
+
+    # Rename APK to include version
+    - |
+      source build.env
+      mv app/build/outputs/apk/release/app-release.apk \
+         app/build/outputs/apk/release/wifi-on-${VERSION_NAME}.apk
+
+    - rm -f keystore.jks
+  artifacts:
+    name: "release-${CI_COMMIT_TAG}"
+    paths:
+      - app/build/outputs/apk/release/wifi-on-*.apk
+      - build.env
+    reports:
+      dotenv: build.env
+    expire_in: 90 days
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v/'
+
+# ── GitLab Release (tags only) ─────────────────────────────────────────────────
+create-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - job: build-release
+      artifacts: true
+  script:
+    - echo "Publishing GitLab Release for ${CI_COMMIT_TAG}"
+  release:
+    name:        "WiFi On ${CI_COMMIT_TAG}"
+    description: |
+      ## WiFi On ${CI_COMMIT_TAG}
+
+      Automatically enables Wi-Fi on device boot.
+
+      ### Install
+      Download the APK below and install on Android 8.0+.
+    tag_name: "${CI_COMMIT_TAG}"
+    assets:
+      links:
+        - name: "wifi-on-${VERSION_NAME}.apk"
+          url:  "${CI_PROJECT_URL}/-/jobs/artifacts/${CI_COMMIT_TAG}/raw/app/build/outputs/apk/release/wifi-on-${VERSION_NAME}.apk?job=build-release"
+          link_type: package
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v/'
