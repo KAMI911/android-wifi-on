@@ -32,7 +32,9 @@ android {
             val storePass   = prop("KEYSTORE_PASSWORD")
             val alias       = prop("KEY_ALIAS")
             val keyPass     = prop("KEY_PASSWORD")
-            if (keystorePath != null && storePass != null && alias != null && keyPass != null) {
+            if (!keystorePath.isNullOrBlank() && !storePass.isNullOrBlank() &&
+                !alias.isNullOrBlank() && !keyPass.isNullOrBlank()
+            ) {
                 storeFile     = file(keystorePath)
                 storePassword = storePass
                 keyAlias      = alias
@@ -49,7 +51,7 @@ android {
                 "proguard-rules.pro"
             )
             val releaseConfig = signingConfigs.getByName("release")
-            if (releaseConfig.storeFile?.exists() == true) {
+            if (releaseConfig.storeFile?.isFile == true) {
                 signingConfig = releaseConfig
             }
         }

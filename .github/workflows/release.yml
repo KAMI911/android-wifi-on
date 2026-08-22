@@ -46,14 +46,22 @@ jobs:
           echo "tag=$TAG"     >> "$GITHUB_OUTPUT"
 
       - name: Decode keystore
-        run: echo "$KEYSTORE_BASE64" | base64 --decode > keystore.jks
+        id: keystore
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > keystore.jks
+            echo "path=${{ github.workspace }}/keystore.jks" >> "$GITHUB_OUTPUT"
+          else
+            echo "No KEYSTORE_BASE64 secret set — building an unsigned release APK."
+            echo "path=" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build release APK
         run: ./gradlew assembleRelease --stacktrace
         env:
-          KEYSTORE_FILE:     ${{ github.workspace }}/keystore.jks
+          KEYSTORE_FILE:     ${{ steps.keystore.outputs.path }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS:         ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD:      ${{ secrets.KEY_PASSWORD }}
