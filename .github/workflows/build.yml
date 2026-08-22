@@ -71,9 +71,4 @@ jobs:
           arch: x86_64
           profile: pixel_5
           disable-animations: true
-          script: |
-            apk_path=$(ls ${{ github.workspace }}/apk/*.apk | head -n1)
-            adb install -r "$apk_path"
-            adb shell am start -n org.kami911.wifion/.MainActivity
-            sleep 5
-            adb shell pidof org.kami911.wifion || (echo "App is not running after launch" && exit 1)
+          script: adb install -r $(ls ${{ github.workspace }}/apk/*.apk | head -n1) && adb shell am start -n org.kami911.wifion/.MainActivity && sleep 5 && adb shell pidof org.kami911.wifion
