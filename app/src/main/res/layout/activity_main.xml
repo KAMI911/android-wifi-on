@@ -52,9 +52,20 @@
         android:gravity="center"
         android:text="@string/info_wifi_off"
         android:textAppearance="?attr/textAppearanceBodyMedium"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/switchAutoEnable"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnEnableWifi" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchAutoEnable"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/switch_auto_enable_screen_on"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvInfo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

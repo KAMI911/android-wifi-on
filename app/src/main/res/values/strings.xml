@@ -25,4 +25,9 @@
     <string name="notification_channel_description">Notifies you to enable Wi-Fi after boot on Android 10+</string>
     <string name="notification_title">Enable Wi-Fi</string>
     <string name="notification_text">Tap to open Wi-Fi settings and turn on Wi-Fi.</string>
+
+    <!-- Auto-enable on screen on -->
+    <string name="switch_auto_enable_screen_on">Re-enable Wi-Fi when screen turns on</string>
+    <string name="service_notification_channel_name">Wi-Fi On watcher</string>
+    <string name="service_notification_title">Watching for screen on to re-enable Wi-Fi</string>
 </resources>

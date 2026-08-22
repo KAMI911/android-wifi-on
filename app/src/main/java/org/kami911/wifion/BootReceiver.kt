@@ -15,6 +15,10 @@ class BootReceiver : BroadcastReceiver() {
         }
 
         WifiHelper.enableWifiIfNeeded(context)
+
+        if (PreferencesManager(context).autoEnableOnScreenOn) {
+            WifiOnService.start(context)
+        }
     }
 
     companion object {
