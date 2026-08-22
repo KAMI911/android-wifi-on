@@ -70,8 +70,8 @@ jobs:
 
       - name: Rename APK
         run: |
-          mv app/build/outputs/apk/release/app-release.apk \
-             app/build/outputs/apk/release/wifi-on-${{ steps.version.outputs.name }}.apk
+          apk=$(ls app/build/outputs/apk/release/app-release*.apk | head -n1)
+          mv "$apk" app/build/outputs/apk/release/wifi-on-${{ steps.version.outputs.name }}.apk
 
       - name: Clean up keystore
         if: always()
