@@ -72,7 +72,7 @@ jobs:
           profile: pixel_5
           disable-animations: true
           script: |
-            apk_path=$(ls apk/*.apk | head -n1)
+            apk_path=$(ls ${{ github.workspace }}/apk/*.apk | head -n1)
             adb install -r "$apk_path"
             adb shell am start -n org.kami911.wifion/.MainActivity
             sleep 5
