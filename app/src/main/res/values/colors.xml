@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="seed">#1565C0</color>
-    <color name="wifi_icon_tint">#1565C0</color>
+
+    <!-- Status colours for the big Wi-Fi icon: green when on, grey when off. -->
+    <color name="wifi_status_on">#2E7D32</color>
+    <color name="wifi_status_off">#9E9E9E</color>
 </resources>

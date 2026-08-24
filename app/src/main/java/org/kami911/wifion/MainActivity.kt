@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -104,6 +105,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateWifiStatus() {
         val enabled = WifiHelper.isWifiEnabled(this)
+        binding.ivWifiStatus.imageTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(this, if (enabled) R.color.wifi_status_on else R.color.wifi_status_off)
+        )
         if (enabled) {
             binding.ivWifiStatus.setImageResource(R.drawable.ic_wifi)
             binding.tvStatus.setText(R.string.status_wifi_on)
