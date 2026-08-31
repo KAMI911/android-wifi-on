@@ -23,7 +23,7 @@ android {
         minSdk = 28
         targetSdk = 31
         versionCode = prop("VERSION_CODE")?.toIntOrNull() ?: 7
-        versionName = prop("VERSION_NAME") ?: "0.0.7-alpha"
+        versionName = prop("VERSION_NAME") ?: "0.0.7"
     }
 
     signingConfigs {
