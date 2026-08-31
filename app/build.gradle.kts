@@ -22,8 +22,8 @@ android {
         applicationId = "org.kami911.wifion"
         minSdk = 28
         targetSdk = 31
-        versionCode = prop("VERSION_CODE")?.toIntOrNull() ?: 7
-        versionName = prop("VERSION_NAME") ?: "0.0.7"
+        versionCode = prop("VERSION_CODE")?.toIntOrNull() ?: 5
+        versionName = prop("VERSION_NAME") ?: "0.0.5"
     }
 
     signingConfigs {
