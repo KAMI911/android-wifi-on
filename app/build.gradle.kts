@@ -20,10 +20,10 @@ android {
 
     defaultConfig {
         applicationId = "org.kami911.wifion"
-        minSdk = 26
-        targetSdk = 35
-        versionCode = prop("VERSION_CODE")?.toIntOrNull() ?: 1
-        versionName = prop("VERSION_NAME") ?: "1.0"
+        minSdk = 28
+        targetSdk = 31
+        versionCode = prop("VERSION_CODE")?.toIntOrNull() ?: 7
+        versionName = prop("VERSION_NAME") ?: "0.0.7-alpha"
     }
 
     signingConfigs {
@@ -40,6 +40,18 @@ android {
                 keyAlias      = alias
                 keyPassword   = keyPass
             }
+        }
+    }
+
+    flavorDimensions.add("ui")
+    productFlavors {
+        create("original") {
+            dimension = "ui"
+            applicationIdSuffix = ""
+        }
+        create("redesign") {
+            dimension = "ui"
+            applicationIdSuffix = ".redesign"
         }
     }
 
@@ -78,4 +90,10 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.activity)
+
+    // Material Design 3
+    implementation("androidx.compose.material3:material3:1.2.0")
+
+    // Dark mode & accessibility
+    implementation("androidx.appcompat:appcompat:1.7.0")
 }
